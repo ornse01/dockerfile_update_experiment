@@ -1,0 +1,37 @@
+name: Update Dockerfile Base Images
+
+on:
+  schedule:
+    # 毎週月曜日の午前9時 (UTC) に実行
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-dockerfiles:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run update script
+        run: ./scripts/update-dockerfiles.sh
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: update debian base image digests"
+          branch: update-debian-digests
+          delete-branch: true
+          title: "chore: update debian base image digests"
+          body: |
+            Dockerfile 内の Debian ベースイメージのダイジェストを最新に自動更新しました。
+            
+            変更内容を確認の上、マージしてください。
+          labels: |
+            dependencies
+            docker
