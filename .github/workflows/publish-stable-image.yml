@@ -37,6 +37,8 @@ jobs:
           context: .
           file: stable/Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/debian-stable:${{ env.TAG_NAME }}
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/debian-stable:${{ env.TAG_NAME }}
+            ghcr.io/${{ github.repository_owner }}/debian-stable:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
