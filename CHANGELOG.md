@@ -3,3 +3,5 @@
 All notable changes to this project will be documented in this file.
 
 <!-- CHANGELOG_PLACEHOLDER -->
+- [2026-06-25] Updated unstable/Dockerfile (debian:unstable-slim) to @sha256:399823d4e7583f7505b4e55c5a0324e20510ec53954e43aa90519a6b0bf3366c
+- [2026-06-25] Updated stable/Dockerfile (debian:stable-slim) to @sha256:ee12ffb55625b99d62837a72f037d9b2f18fd0c787a89c2b9a4f09666c48776c
