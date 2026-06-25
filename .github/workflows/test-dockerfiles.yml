@@ -12,26 +12,39 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Build Stable Image
-        run: |
-          if [ -f stable/Dockerfile ]; then
-            docker build -t debian-stable-test -f stable/Dockerfile .
-          fi
+        if: hashFiles('stable/Dockerfile') != ''
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: stable/Dockerfile
+          push: false
+          load: true
+          tags: debian-stable-test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Run Tests on Stable Image
+        if: hashFiles('stable/Dockerfile') != ''
         run: |
-          if [ -f stable/Dockerfile ]; then
-            docker run --rm -v ${{ github.workspace }}/scripts:/scripts debian-stable-test bash /scripts/run-dummy-tests.sh
-          fi
+          docker run --rm -v ${{ github.workspace }}/scripts:/scripts debian-stable-test bash /scripts/run-dummy-tests.sh
 
       - name: Build Unstable Image
-        run: |
-          if [ -f unstable/Dockerfile ]; then
-            docker build -t debian-unstable-test -f unstable/Dockerfile .
-          fi
+        if: hashFiles('unstable/Dockerfile') != ''
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: unstable/Dockerfile
+          push: false
+          load: true
+          tags: debian-unstable-test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Run Tests on Unstable Image
+        if: hashFiles('unstable/Dockerfile') != ''
         run: |
-          if [ -f unstable/Dockerfile ]; then
-            docker run --rm -v ${{ github.workspace }}/scripts:/scripts debian-unstable-test bash /scripts/run-dummy-tests.sh
-          fi
+          docker run --rm -v ${{ github.workspace }}/scripts:/scripts debian-unstable-test bash /scripts/run-dummy-tests.sh
