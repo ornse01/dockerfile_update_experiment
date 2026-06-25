@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run update script
-        run: ./scripts/update-dockerfiles.sh
+        run: ruby ./scripts/update-dockerfiles.rb
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
