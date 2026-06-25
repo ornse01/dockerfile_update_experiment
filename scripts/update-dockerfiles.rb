@@ -38,6 +38,32 @@ def get_latest_digest(image, tag)
   digest.strip
 end
 
+def log_to_changelog(message)
+  changelog_path = "CHANGELOG.md"
+  
+  unless File.exist?(changelog_path)
+    File.write(changelog_path, "# CHANGELOG\n\nAll notable changes to this project will be documented in this file.\n\n<!-- CHANGELOG_PLACEHOLDER -->\n")
+  end
+  
+  content = File.read(changelog_path)
+  today = Time.now.strftime("%Y-%m-%d")
+  log_entry = "- [#{today}] #{message}"
+  
+  if content.include?(log_entry)
+    puts "Changelog entry already exists: #{log_entry}"
+    return
+  end
+  
+  if content.include?("<!-- CHANGELOG_PLACEHOLDER -->")
+    new_content = content.gsub("<!-- CHANGELOG_PLACEHOLDER -->", "<!-- CHANGELOG_PLACEHOLDER -->\n#{log_entry}")
+    File.write(changelog_path, new_content)
+    puts "Added to CHANGELOG: #{log_entry}"
+  else
+    File.write(changelog_path, "\n#{log_entry}\n", mode: 'a')
+    puts "Added to CHANGELOG (append): #{log_entry}"
+  end
+end
+
 TARGETS.each do |target|
   df_path = target[:df_path]
   image = target[:image]
@@ -62,8 +88,14 @@ TARGETS.each do |target|
     
     if content =~ pattern
       new_content = content.gsub(pattern, "FROM #{image}:#{tag}@#{latest_digest}")
-      File.write(df_path, new_content)
-      puts "Updated #{df_path} successfully."
+      
+      if content != new_content
+        File.write(df_path, new_content)
+        puts "Updated #{df_path} successfully."
+        log_to_changelog("Updated #{df_path} (#{image}:#{tag}) to @#{latest_digest}")
+      else
+        puts "#{df_path} is already up-to-date. No changes made."
+      end
     else
       puts "Warning: No matching FROM instruction found in #{df_path}."
     end
