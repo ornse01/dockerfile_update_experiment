@@ -1,0 +1,52 @@
+name: Scheduled Trivy Scan
+
+on:
+  schedule:
+    # 毎日午前0時に実行
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  scan-and-update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner on GHCR Image
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: 'ghcr.io/${{ github.repository_owner }}/debian-stable:latest'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: false
+          vuln-type: 'os,library'
+          severity: 'UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL'
+
+      - name: Set up Ruby
+        if: failure()
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3.5'
+
+      - name: Run update script
+        if: failure()
+        run: ruby ./scripts/update-dockerfiles.rb
+
+      - name: Create Pull Request
+        if: failure()
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: update base images due to Trivy vulnerability detection"
+          branch: trivy-security-update
+          delete-branch: true
+          title: "security: update base images due to Trivy vulnerability detection"
+          body: |
+            Trivy スキャンにより GHCR 上のイメージに脆弱性が検出されたため、ベースイメージのダイジェストと CHANGELOG を自動更新しました。
+            
+            PR のテストが通過することを確認の上、マージしてください。
