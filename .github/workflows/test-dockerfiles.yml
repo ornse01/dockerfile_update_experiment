@@ -29,7 +29,7 @@ jobs:
 
       - name: Run Trivy vulnerability scanner on Stable Image
         if: hashFiles('stable/Dockerfile') != ''
-        uses: aquasecurity/trivy-action@v0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: 'debian-stable-test'
           format: 'table'
@@ -57,7 +57,7 @@ jobs:
 
       - name: Run Trivy vulnerability scanner on Unstable Image
         if: hashFiles('unstable/Dockerfile') != ''
-        uses: aquasecurity/trivy-action@v0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: 'debian-unstable-test'
           format: 'table'
