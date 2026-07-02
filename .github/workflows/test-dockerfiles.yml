@@ -5,6 +5,10 @@ on:
     paths:
       - '**/Dockerfile'
 
+permissions:
+  contents: read
+  actions: write
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
