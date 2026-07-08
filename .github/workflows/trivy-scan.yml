@@ -19,13 +19,31 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Run Trivy vulnerability scanner on GHCR Image
+      - name: Run Trivy vulnerability scanner (All vulnerabilities for Job Summary)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: 'ghcr.io/${{ github.repository_owner }}/debian-stable:latest'
+          format: 'table'
+          output: 'trivy-report.txt'
+          ignore-unfixed: false
+          vuln-type: 'os,library'
+          severity: 'UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL'
+
+      - name: Publish Trivy report to Job Summary
+        run: |
+          echo "### Trivy Vulnerability Scan Report" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat trivy-report.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+        if: always()
+
+      - name: Run Trivy vulnerability scanner (Fail only on fixed vulnerabilities)
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: 'ghcr.io/${{ github.repository_owner }}/debian-stable:latest'
           format: 'table'
           exit-code: '1'
-          ignore-unfixed: false
+          ignore-unfixed: true
           vuln-type: 'os,library'
           severity: 'UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL'
 
