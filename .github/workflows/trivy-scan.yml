@@ -31,10 +31,16 @@ jobs:
 
       - name: Publish Trivy report to Job Summary
         run: |
-          echo "### Trivy Vulnerability Scan Report" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          cat trivy-report.txt >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
+          if [ -f trivy-report.txt ]; then
+            echo "### Trivy Vulnerability Scan Report" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            cat trivy-report.txt >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            rm -f trivy-report.txt
+          else
+            echo "### Trivy Vulnerability Scan Report" >> $GITHUB_STEP_SUMMARY
+            echo "No report file found." >> $GITHUB_STEP_SUMMARY
+          fi
         if: always()
 
       - name: Run Trivy vulnerability scanner (Fail only on fixed vulnerabilities)
