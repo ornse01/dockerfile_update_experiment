@@ -61,7 +61,7 @@ jobs:
 
       - name: Run update script
         if: failure()
-        run: ruby ./scripts/update-dockerfiles.rb
+        run: ruby ./scripts/update-dockerfiles.rb --trivy
 
       - name: Create Pull Request
         if: failure()

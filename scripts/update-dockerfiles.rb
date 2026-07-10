@@ -3,6 +3,8 @@ require 'net/http'
 require 'json'
 require 'uri'
 
+trivy_mode = ARGV.include?("--trivy")
+
 TARGETS = [
   { df_path: "stable/Dockerfile", image: "debian", tag: "stable-slim" },
   { df_path: "unstable/Dockerfile", image: "debian", tag: "unstable-slim" }
@@ -93,6 +95,25 @@ TARGETS.each do |target|
         File.write(df_path, new_content)
         puts "Updated #{df_path} successfully."
         log_to_changelog("Updated #{df_path} (#{image}:#{tag}) to @#{latest_digest}")
+      elsif trivy_mode
+        # FROMのダイジェストは変わっていないが、Trivy脆弱性検知モードの場合
+        # コメントを挿入・更新してキャッシュを破棄し、差分を作る
+        security_comment = "# SECURITY_UPDATE: #{Time.now.strftime("%Y-%m-%d")}"
+        
+        if new_content =~ /# SECURITY_UPDATE: \d{4}-\d{2}-\d{2}/
+          new_content_with_comment = new_content.gsub(/# SECURITY_UPDATE: \d{4}-\d{2}-\d{2}/, security_comment)
+        else
+          # FROM行の直後に挿入
+          new_content_with_comment = new_content.gsub(/(FROM\s+.*)/, "\\1\n#{security_comment}")
+        end
+        
+        if content != new_content_with_comment
+          File.write(df_path, new_content_with_comment)
+          puts "Force updated #{df_path} with security comment to bust cache."
+          log_to_changelog("Rebuilt #{df_path} for security updates (no base image changes)")
+        else
+          puts "#{df_path} is already up-to-date with today's security comment."
+        end
       else
         puts "#{df_path} is already up-to-date. No changes made."
       end
