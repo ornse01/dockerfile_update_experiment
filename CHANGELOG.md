@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file.
 
 <!-- CHANGELOG_PLACEHOLDER -->
+- [2026-07-12] Rebuilt unstable/Dockerfile for security updates (no base image changes)
+- [2026-07-12] Rebuilt stable/Dockerfile for security updates (no base image changes)
 - [2026-07-11] Rebuilt unstable/Dockerfile for security updates (no base image changes)
 - [2026-07-11] Rebuilt stable/Dockerfile for security updates (no base image changes)
 - [2026-06-27] Updated unstable/Dockerfile (debian:unstable-slim) to @sha256:399823d4e7583f7505b4e55c5a0324e20510ec53954e43aa90519a6b0bf3366c
