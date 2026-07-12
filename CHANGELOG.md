@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file.
 
+- [2026-07-12] fix package upgrade
+
 <!-- CHANGELOG_PLACEHOLDER -->
 - [2026-07-11] Rebuilt unstable/Dockerfile for security updates (no base image changes)
 - [2026-07-11] Rebuilt stable/Dockerfile for security updates (no base image changes)
