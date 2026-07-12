@@ -50,11 +50,12 @@
 #### テスト成功・失敗のテスト方法
 *   **失敗の検証**: `scripts/run-dummy-tests.sh` の末尾にある `exit 0` を `exit 1` に書き換えてプッシュすると、GitHub Actions のテストジョブを意図的に失敗させることができます。
 
-### 3. mainマージ時の自動デプロイ (GHCRプッシュ)
+### 3. mainマージ時の自動デプロイ (GHCRプッシュ & 署名)
 *   **動作**: PR が `main` ブランチにマージされ、かつ `stable/Dockerfile` に変更があった場合に `publish-stable-image.yml` が動作します。
 *   **処理内容**:
     1.  GHA のビルドキャッシュを引き継ぎ、イメージをビルドします。
     2.  GitHub Container Registry (GHCR) に、実行日の年月日（`YYYYMMDD`）タグおよび `latest` タグを付与して自動プッシュします。
+    3.  プッシュした Docker イメージに対し、`sigstore/cosign` を使用して署名を行います（Keyless 署名）。これにより、改ざん防止と信頼性の検証が可能になります。
 
 ### 4. 定期脆弱性スキャン (Trivyによるチェックと更新)
 *   **動作**: `trivy-scan.yml` ワークフローが毎日深夜に実行されます。
@@ -67,6 +68,27 @@
 *   **動作**: ワークフローファイルが変更された場合、または手動起動で `zizmor.yml` が動作します。
 *   **処理内容**:
     1.  `zizmor-action` (zizmor) を使用して、リポジトリ内の GitHub Actions ワークフロー設定におけるセキュリティ上の問題（過剰な権限、未ピン留めのアクション参照など）をスキャン・報告します。
+
+---
+
+## 署名の検証
+
+本プロジェクトでビルドされ GHCR にプッシュされた Docker イメージは、`sigstore/cosign` による Keyless 署名が施されています。
+署名を検証することで、対象のイメージが本リポジトリの特定のワークフロー（`main` ブランチ）からビルド・プッシュされた真正なものであることを確認できます。
+
+### 検証コマンド
+
+以下の `cosign verify` コマンドを実行することで、イメージの署名と証明書の検証を行うことができます。
+
+```bash
+cosign verify ghcr.io/ornse01/debian-stable:[タグ名] \
+  --certificate-identity-regexp "^https://github\.com/ornse01/dockerfile_update_experiment/\.github/workflows/.+@refs/heads/main$" \
+  --certificate-oidc-issuer "https://token.actions.githubusercontent.com"
+```
+
+*   `[タグ名]` には、検証したいイメージのタグ（例: `latest` や `20260712` などの日付タグ）を指定してください。
+*   `--certificate-identity-regexp` オプションで、署名を実行した GitHub Actions ワークフローのアイデンティティ（本リポジトリの `main` ブランチ上のワークフロー）を確認します。
+*   `--certificate-oidc-issuer` オプションで、証明書の OIDC イシュアーが GitHub Actions（`https://token.actions.githubusercontent.com`）であることを確認します。
 
 ---
 
