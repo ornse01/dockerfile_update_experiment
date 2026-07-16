@@ -15,3 +15,5 @@
 ## 意思決定のインデックス (Index of Decisions)
 
 * [ADR-0000: Markdown Architectural Decision Records (MADR) の導入](0000-use-markdown-architectural-decision-records.md) - **accepted**
+* [ADR-0001: ベースイメージの自動更新およびリリースフロー](0001-base-image-update-workflow.md) - **accepted**
+
