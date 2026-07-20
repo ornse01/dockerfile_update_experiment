@@ -54,7 +54,7 @@
 *   **動作**: PR が `main` ブランチにマージされ、かつ `stable/Dockerfile` に変更があった場合に `publish-stable-image.yml` が動作します。
 *   **処理内容**:
     1.  GHA のビルドキャッシュを引き継ぎ、イメージをビルドします。
-    2.  GitHub Container Registry (GHCR) に、実行日の年月日（`YYYYMMDD`）タグおよび `latest` タグを付与して自動プッシュします。
+    2.  GitHub Container Registry (GHCR) に、実行日の年月日（`YYYYMMDD`）タグおよび `latest` タグを付与し、さらに Provenance と SBOM のアテステーション情報を添付して自動プッシュします。
     3.  プッシュした Docker イメージに対し、`sigstore/cosign` を使用して署名を行います（Keyless 署名）。これにより、改ざん防止と信頼性の検証が可能になります。
 
 ### 4. 定期脆弱性スキャン (Trivyによるチェックと更新)
@@ -89,6 +89,26 @@ cosign verify ghcr.io/ornse01/debian-stable:[タグ名] \
 *   `[タグ名]` には、検証したいイメージのタグ（例: `latest` や `20260712` などの日付タグ）を指定してください。
 *   `--certificate-identity-regexp` オプションで、署名を実行した GitHub Actions ワークフローのアイデンティティ（本リポジトリの `main` ブランチ上のワークフロー）を確認します。
 *   `--certificate-oidc-issuer` オプションで、証明書の OIDC イシュアーが GitHub Actions（`https://token.actions.githubusercontent.com`）であることを確認します。
+
+---
+
+## アテステーション（SBOM・Provenance）の検証
+
+本プロジェクトでビルドされ GHCR にプッシュされた Docker イメージには、ソフトウェアサプライチェーンの透明性と安全性を高めるため、ビルド来歴情報（Provenance）およびソフトウェア部品構成表（SBOM）のアテステーション情報が添付されています。
+
+### 検証コマンド
+
+以下の `docker buildx imagetools inspect` コマンドを実行することで、提供されている Provenance および SBOM の JSON データを取得・確認できます。
+
+**Provenance（ビルド来歴情報）の確認:**
+```bash
+docker buildx imagetools inspect ghcr.io/ornse01/debian-stable:[タグ名] --format "{{ json .Provenance }}"
+```
+
+**SBOM（ソフトウェア部品構成表）の確認:**
+```bash
+docker buildx imagetools inspect ghcr.io/ornse01/debian-stable:[タグ名] --format "{{ json .SBOM }}"
+```
 
 ---
 
