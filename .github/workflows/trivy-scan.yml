@@ -70,10 +70,8 @@ jobs:
         with:
           app-id: ${{ secrets.PR_CREATOR_APP_ID }}
           private-key: ${{ secrets.PR_CREATOR_APP_PRIVATE_KEY }}
-          repositories: ${{ github.event.repository.name }}
-          permissions: |
-            contents: read
-            pull-requests: write
+          permission-pull-requests: write
+          permission-contents: write
 
       - name: Create Pull Request
         if: failure()
