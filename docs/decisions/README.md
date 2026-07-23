@@ -17,5 +17,6 @@
 * [ADR-0000: Markdown Architectural Decision Records (MADR) の導入](0000-use-markdown-architectural-decision-records.md) - **accepted**
 * [ADR-0001: ベースイメージの自動更新およびリリースフロー](0001-base-image-update-workflow.md) - **accepted**
 * [ADR-0002: GitHub ActionでGitHub Appsトークンを使用する](0002-use-github-app-token-in-github-actions.md) - **accepted**
+* [ADR-0003: stable と unstable の2つの Dockerfile を用意する設計方針](0003-separate-stable-and-unstable-dockerfiles.md) - **accepted**
 
 
