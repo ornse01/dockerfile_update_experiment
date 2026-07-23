@@ -1,7 +1,7 @@
 ---
 status: accepted
 date: 2026-07-12
-decision-makers: srone, Antigravity
+decision-makers: ornse01, Antigravity
 ---
 
 # Markdown Architectural Decision Records (MADR) の導入
