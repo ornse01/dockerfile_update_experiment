@@ -97,22 +97,24 @@ TARGETS.each do |target|
         log_to_changelog("Updated #{df_path} (#{image}:#{tag}) to @#{latest_digest}")
       elsif trivy_mode
         # FROMのダイジェストは変わっていないが、Trivy脆弱性検知モードの場合
-        # コメントを挿入・更新してキャッシュを破棄し、差分を作る
-        security_comment = "# SECURITY_UPDATE: #{Time.now.strftime("%Y-%m-%d")}"
+        # ARG SECURITY_UPDATE_DATE を挿入・更新してキャッシュを破棄し、差分を作る
+        security_arg = "ARG SECURITY_UPDATE_DATE=#{Time.now.strftime("%Y-%m-%d")}"
         
-        if new_content =~ /# SECURITY_UPDATE: \d{4}-\d{2}-\d{2}/
-          new_content_with_comment = new_content.gsub(/# SECURITY_UPDATE: \d{4}-\d{2}-\d{2}/, security_comment)
+        if new_content =~ /ARG SECURITY_UPDATE_DATE=\d{4}-\d{2}-\d{2}/
+          new_content_with_arg = new_content.gsub(/ARG SECURITY_UPDATE_DATE=\d{4}-\d{2}-\d{2}/, security_arg)
+        elsif new_content =~ /# SECURITY_UPDATE: \d{4}-\d{2}-\d{2}/
+          new_content_with_arg = new_content.gsub(/# SECURITY_UPDATE: \d{4}-\d{2}-\d{2}/, security_arg)
         else
           # FROM行の直後に挿入
-          new_content_with_comment = new_content.gsub(/(FROM\s+.*)/, "\\1\n#{security_comment}")
+          new_content_with_arg = new_content.gsub(/(FROM\s+.*)/, "\\1\n#{security_arg}")
         end
         
-        if content != new_content_with_comment
-          File.write(df_path, new_content_with_comment)
-          puts "Force updated #{df_path} with security comment to bust cache."
+        if content != new_content_with_arg
+          File.write(df_path, new_content_with_arg)
+          puts "Force updated #{df_path} with security ARG to bust cache."
           log_to_changelog("Rebuilt #{df_path} for security updates (no base image changes)")
         else
-          puts "#{df_path} is already up-to-date with today's security comment."
+          puts "#{df_path} is already up-to-date with today's security ARG."
         end
       else
         puts "#{df_path} is already up-to-date. No changes made."
