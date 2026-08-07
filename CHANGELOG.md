@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 - [2026-07-12] fix package upgrade
 
 <!-- CHANGELOG_PLACEHOLDER -->
+- [2026-08-07] Updated unstable/Dockerfile (debian:unstable-slim) to @sha256:26bc122d974bb7f2d1a61ac4ac595584d7f03d048bc2c284debcebc012d91a31
+- [2026-08-07] Updated stable/Dockerfile (debian:stable-slim) to @sha256:0d97731c59efdde181e19c4a5ec22d16e9eefcb73175598b9b7bae712c7214eb
 - [2026-08-01] Rebuilt unstable/Dockerfile for security updates (no base image changes)
 - [2026-08-01] Rebuilt stable/Dockerfile for security updates (no base image changes)
 - [2026-07-20] Updated unstable/Dockerfile (debian:unstable-slim) to @sha256:153e7023d3501a4a980f54fd3e8560c029109bb1a3475fcc5047fc948da553ab
