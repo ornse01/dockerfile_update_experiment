@@ -71,7 +71,7 @@ TARGETS.each do |target|
   image = target[:image]
   tag = target[:tag]
   
-  puts "Checking #{df_path} (#{image}:#{tag})..."
+  puts "Processing #{df_path} (#{image}:#{tag}) [mode: #{trivy_mode ? 'Trivy Cache-Bust' : 'Base Image Digest Update'}]..."
   
   unless File.exist?(df_path)
     puts "Warning: File #{df_path} does not exist. Skipping."
@@ -79,48 +79,50 @@ TARGETS.each do |target|
   end
   
   begin
-    latest_digest = get_latest_digest(image, tag)
-    puts "Latest digest: #{latest_digest}"
-    
-    # ファイル読み込みと置換処理
     content = File.read(df_path)
     
-    # FROM <image>:<tag> または FROM <image>:<tag>@sha256:<hash> にマッチする正規表現
-    pattern = /FROM\s+#{Regexp.escape(image)}:#{Regexp.escape(tag)}(@sha256:[a-f0-9]{64})?/
-    
-    if content =~ pattern
-      new_content = content.gsub(pattern, "FROM #{image}:#{tag}@#{latest_digest}")
+    if trivy_mode
+      # Trivy脆弱性検知モード: FROMのダイジェストは変更せず、ARG SECURITY_UPDATE_DATE を更新してキャッシュをバストする
+      today = Time.now.strftime("%Y-%m-%d")
+      security_arg = "ARG SECURITY_UPDATE_DATE=#{today}"
+      
+      if content =~ /ARG SECURITY_UPDATE_DATE=\d{4}-\d{2}-\d{2}/
+        new_content = content.gsub(/ARG SECURITY_UPDATE_DATE=\d{4}-\d{2}-\d{2}/, security_arg)
+      elsif content =~ /# SECURITY_UPDATE: \d{4}-\d{2}-\d{2}/
+        new_content = content.gsub(/# SECURITY_UPDATE: \d{4}-\d{2}-\d{2}/, security_arg)
+      else
+        # FROM行の直後に挿入
+        new_content = content.gsub(/(FROM\s+.*)/, "\\1\n#{security_arg}")
+      end
       
       if content != new_content
         File.write(df_path, new_content)
-        puts "Updated #{df_path} successfully."
-        log_to_changelog("Updated #{df_path} (#{image}:#{tag}) to @#{latest_digest}")
-      elsif trivy_mode
-        # FROMのダイジェストは変わっていないが、Trivy脆弱性検知モードの場合
-        # ARG SECURITY_UPDATE_DATE を挿入・更新してキャッシュを破棄し、差分を作る
-        security_arg = "ARG SECURITY_UPDATE_DATE=#{Time.now.strftime("%Y-%m-%d")}"
-        
-        if new_content =~ /ARG SECURITY_UPDATE_DATE=\d{4}-\d{2}-\d{2}/
-          new_content_with_arg = new_content.gsub(/ARG SECURITY_UPDATE_DATE=\d{4}-\d{2}-\d{2}/, security_arg)
-        elsif new_content =~ /# SECURITY_UPDATE: \d{4}-\d{2}-\d{2}/
-          new_content_with_arg = new_content.gsub(/# SECURITY_UPDATE: \d{4}-\d{2}-\d{2}/, security_arg)
-        else
-          # FROM行の直後に挿入
-          new_content_with_arg = new_content.gsub(/(FROM\s+.*)/, "\\1\n#{security_arg}")
-        end
-        
-        if content != new_content_with_arg
-          File.write(df_path, new_content_with_arg)
-          puts "Force updated #{df_path} with security ARG to bust cache."
-          log_to_changelog("Rebuilt #{df_path} for security updates (no base image changes)")
-        else
-          puts "#{df_path} is already up-to-date with today's security ARG."
-        end
+        puts "Force updated #{df_path} with security ARG to bust cache."
+        log_to_changelog("Rebuilt #{df_path} for security updates (due to Trivy vulnerability detection)")
       else
-        puts "#{df_path} is already up-to-date. No changes made."
+        puts "#{df_path} is already up-to-date with today's security ARG."
       end
     else
-      puts "Warning: No matching FROM instruction found in #{df_path}."
+      # 通常モード: Docker Hub から最新ダイジェストを取得し、FROM 行のダイジェストを更新する
+      latest_digest = get_latest_digest(image, tag)
+      puts "Latest digest: #{latest_digest}"
+      
+      # FROM <image>:<tag> または FROM <image>:<tag>@sha256:<hash> にマッチする正規表現
+      pattern = /FROM\s+#{Regexp.escape(image)}:#{Regexp.escape(tag)}(@sha256:[a-f0-9]{64})?/
+      
+      if content =~ pattern
+        new_content = content.gsub(pattern, "FROM #{image}:#{tag}@#{latest_digest}")
+        
+        if content != new_content
+          File.write(df_path, new_content)
+          puts "Updated #{df_path} successfully."
+          log_to_changelog("Updated #{df_path} (#{image}:#{tag}) to @#{latest_digest}")
+        else
+          puts "#{df_path} is already up-to-date. No changes made."
+        end
+      else
+        puts "Warning: No matching FROM instruction found in #{df_path}."
+      end
     end
   rescue => e
     warn "Error updating #{df_path}: #{e.message}"

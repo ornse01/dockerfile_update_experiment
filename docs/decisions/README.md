@@ -19,5 +19,6 @@
 * [ADR-0002: GitHub ActionでGitHub Appsトークンを使用する](0002-use-github-app-token-in-github-actions.md) - **accepted**
 * [ADR-0003: stable と unstable の2つの Dockerfile を用意する設計方針](0003-separate-stable-and-unstable-dockerfiles.md) - **accepted**
 * [ADR-0004: Trivyセキュリティ更新時のDockerレイヤーキャッシュ無効化（Cache Busting）](0004-docker-layer-cache-busting-on-trivy-security-update.md) - **accepted**
+* [ADR-0005: ベースイメージ更新と脆弱性対応再ビルドの責務分離](0005-separate-base-image-update-and-vulnerability-rebuild.md) - **accepted**
 
 
