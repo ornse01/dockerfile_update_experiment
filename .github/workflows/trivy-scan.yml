@@ -78,11 +78,11 @@ jobs:
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
           token: ${{ steps.app-token.outputs.token }}
-          commit-message: "chore: update base images due to Trivy vulnerability detection"
+          commit-message: "security: trigger rebuild for vulnerability updates"
           branch: trivy-security-update
           delete-branch: true
-          title: "security: update base images due to Trivy vulnerability detection"
+          title: "security: trigger rebuild due to Trivy vulnerability detection"
           body: |
-            Trivy スキャンにより GHCR 上のイメージに脆弱性が検出されたため、ベースイメージのダイジェストと CHANGELOG を自動更新しました。
-            
+            Trivy スキャンにより GHCR 上のイメージに修正可能な脆弱性が検出されたため、Docker キャッシュを無効化（`ARG SECURITY_UPDATE_DATE` を更新）してパッケージを最新化する再ビルド用 PR を作成しました。
+
             PR のテストが通過することを確認の上、マージしてください。
