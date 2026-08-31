@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 - [2026-07-12] fix package upgrade
 
 <!-- CHANGELOG_PLACEHOLDER -->
+- [2026-08-31] Updated unstable/Dockerfile (debian:unstable-slim) to @sha256:f356315819992f4aa30e377208b8b37983d4c3420efa7d490ce4e93a213fd66a
+- [2026-08-31] Updated stable/Dockerfile (debian:stable-slim) to @sha256:04634311a8d5fc442b6eb06d792293c4f3e2268652ca7634e00ce8ef5cc0a28a
 - [2026-08-30] Rebuilt unstable/Dockerfile for security updates (due to Trivy vulnerability detection)
 - [2026-08-30] Rebuilt stable/Dockerfile for security updates (due to Trivy vulnerability detection)
 - [2026-08-29] Rebuilt unstable/Dockerfile for security updates (due to Trivy vulnerability detection)
