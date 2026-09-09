@@ -34,7 +34,7 @@ description: Markdown Architectural Decision Records (MADR) 形式を使用し�
 3. **メタデータを記入する**:
    - `status`: 通常は `proposed`（提案中）から始めます。承認されたら `accepted`（承認済み）に変更します。
    - `date`: 作成または更新した当日の日付（YYYY-MM-DD）。
-   - `decision-makers`: 意思決定に関わった人やエージェントの名前。
+   - `decision-makers`: 意思決定に関わった人やエージェントの名前。人を記載する場合は、Git の author もしくは committer と同じ名前（例: `git config user.name` やコミット履歴の名前）を指定します。エージェントと共同で決定した場合は、両方の名前を併記します（例: `<ユーザー名>, Antigravity`）。
 4. **内容を起草する**: アーキテクチャの議論に基づき、背景、決定要因、検討した選択肢、意思決定の結末、メリット・デメリットを記入します。
 5. **インデックスにADRを登録する**: [README.md](../../../docs/decisions/README.md) のリストに新しいADRを追加します。
 6. **レビューを依頼する**: 作成したADRファイルとREADMEの変更内容をユーザーに提案し、確認を得ます。

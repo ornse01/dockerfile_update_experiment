@@ -2,7 +2,7 @@
 # これらは任意のメタデータ要素です。不要なものは削除してください。
 status: "{proposed | rejected | accepted | deprecated | … | superseded by ADR-0123}"
 date: {意思決定が最後に更新された日付 YYYY-MM-DD}
-decision-makers: {意思決定に関わった全員のリスト}
+decision-makers: {意思決定に関わった全員のリスト。人を記載する場合はGitのauthor/committerと同じ名前}
 consulted: {意見を求めた人のリスト（双方向のコミュニケーションがあった主たる専門家など）}
 informed: {進行状況を報告した人のリスト（一方向の通知のみ）}
 ---
