@@ -9,6 +9,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  security-events: write
 
 jobs:
   scan-and-update:
@@ -19,28 +20,20 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Run Trivy vulnerability scanner (All vulnerabilities for Job Summary)
+      - name: Run Trivy vulnerability scanner (All vulnerabilities for SARIF report)
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: 'ghcr.io/${{ github.repository_owner }}/debian-stable:latest'
-          format: 'table'
-          output: 'trivy-report.txt'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
           ignore-unfixed: false
           vuln-type: 'os,library'
           severity: 'UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL'
 
-      - name: Publish Trivy report to Job Summary
-        run: |
-          if [ -f trivy-report.txt ]; then
-            echo "### Trivy Vulnerability Scan Report" >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-            cat trivy-report.txt >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-            rm -f trivy-report.txt
-          else
-            echo "### Trivy Vulnerability Scan Report" >> $GITHUB_STEP_SUMMARY
-            echo "No report file found." >> $GITHUB_STEP_SUMMARY
-          fi
+      - name: Upload Trivy scan results to GitHub Security
+        uses: github/codeql-action/upload-sarif@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2  # v4.38.2
+        with:
+          sarif_file: 'trivy-results.sarif'
         if: always()
 
       - name: Run Trivy vulnerability scanner (Fail only on fixed vulnerabilities)
