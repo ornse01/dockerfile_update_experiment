@@ -20,5 +20,6 @@
 * [ADR-0003: stable と unstable の2つの Dockerfile を用意する設計方針](0003-separate-stable-and-unstable-dockerfiles.md) - **accepted**
 * [ADR-0004: Trivyセキュリティ更新時のDockerレイヤーキャッシュ無効化（Cache Busting）](0004-docker-layer-cache-busting-on-trivy-security-update.md) - **accepted**
 * [ADR-0005: ベースイメージ更新と脆弱性対応再ビルドの責務分離](0005-separate-base-image-update-and-vulnerability-rebuild.md) - **accepted**
+* [ADR-0006: Trivy スキャン結果の出力先を GitHub Security（SARIF）に変更](0006-trivy-scan-report-to-security-tab.md) - **accepted**
 
 
