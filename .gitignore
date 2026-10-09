@@ -1,1 +1,2 @@
 .cache/
+trivy-results.sarif
