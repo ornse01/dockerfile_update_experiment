@@ -1,5 +1,5 @@
 FROM debian:stable-slim@sha256:5bc3287b25407c965a30f38e32603dc253a3869e1b12a21ac09bfc27fd8b13ce
-ARG SECURITY_UPDATE_DATE=2026-09-30
+ARG SECURITY_UPDATE_DATE=2026-10-09
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
     curl \
