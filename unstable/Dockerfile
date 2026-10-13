@@ -1,4 +1,4 @@
-FROM debian:unstable-slim@sha256:8c99fc3b4617c61eaa16d4436748f779e9a6354b004117814453a23a0dc35279
+FROM debian:unstable-slim@sha256:c08a0224cfc8b218e619427b09aac70939ec5ac68d91a58a558b7c20e5f0d280
 ARG SECURITY_UPDATE_DATE=2026-10-10
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
