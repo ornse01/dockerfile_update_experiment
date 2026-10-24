@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 - [2026-07-12] fix package upgrade
 
 <!-- CHANGELOG_PLACEHOLDER -->
+- [2026-10-24] Rebuilt unstable/Dockerfile for security updates (due to Trivy vulnerability detection)
+- [2026-10-24] Rebuilt stable/Dockerfile for security updates (due to Trivy vulnerability detection)
 - [2026-10-21] Rebuilt unstable/Dockerfile for security updates (due to Trivy vulnerability detection)
 - [2026-10-21] Rebuilt stable/Dockerfile for security updates (due to Trivy vulnerability detection)
 - [2026-10-18] Rebuilt unstable/Dockerfile for security updates (due to Trivy vulnerability detection)
