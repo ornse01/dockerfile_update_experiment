@@ -21,5 +21,6 @@
 * [ADR-0004: Trivyセキュリティ更新時のDockerレイヤーキャッシュ無効化（Cache Busting）](0004-docker-layer-cache-busting-on-trivy-security-update.md) - **accepted**
 * [ADR-0005: ベースイメージ更新と脆弱性対応再ビルドの責務分離](0005-separate-base-image-update-and-vulnerability-rebuild.md) - **accepted**
 * [ADR-0006: Trivy スキャン結果の出力先を GitHub Security（SARIF）に変更](0006-trivy-scan-report-to-security-tab.md) - **accepted**
+* [ADR-0007: 自動更新 PR の自動マージ導入と Gatekeeper パターンによる必須チェックデッドロックの回避](0007-auto-merge-bot-prs-with-gatekeeper-pattern.md) - **accepted**
 
 
